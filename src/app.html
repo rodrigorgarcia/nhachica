@@ -1,0 +1,364 @@
+<title>Caminho de Nhá Chica</title>
+{{META}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;0,800;1,500&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;display=swap">
+<style>
+/* Layout: caderneta de bolso em coluna única. Uma trilha tracejada à esquerda liga as cidades na ordem do caminho, com o km acumulado em cada parada; abas fixas embaixo, ao alcance do polegar. */
+:root {
+  --bg: #F2F5F8;
+  --superficie: #FFFFFF;
+  --tinta: #12202D;
+  --apagado: #55667A;
+  --linha: #D3DCE5;
+  --trilha: #9AAABB;
+  --azul: #1B4E8E;
+  --azul-suave: #E1EAF5;
+  --sobre-azul: #FFFFFF;
+  --ouro: #8A5C00;
+  --ouro-vivo: #D99F16;
+  --ok: #1E6E45;
+  --ok-suave: #DDF0E4;
+  --alerta: #8F4400;
+  --alerta-suave: #FBE6CF;
+  --qr-fundo: #FFFFFF;
+  --qr-tinta: #000000;
+  --f-display: "Alegreya", Georgia, "Times New Roman", serif;
+  --f-texto: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --abas-h: 60px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C151F; --superficie: #14202D; --tinta: #E4EBF2; --apagado: #9AABBD; --linha: #243444; --trilha: #4A5F75;
+    --azul: #8AB6F0; --azul-suave: #1A2C43; --sobre-azul: #0C151F;
+    --ouro: #E8B84E; --ouro-vivo: #E8B84E;
+    --ok: #79D3A0; --ok-suave: #15301F; --alerta: #F3AA62; --alerta-suave: #3A2513;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C151F; --superficie: #14202D; --tinta: #E4EBF2; --apagado: #9AABBD; --linha: #243444; --trilha: #4A5F75;
+  --azul: #8AB6F0; --azul-suave: #1A2C43; --sobre-azul: #0C151F;
+  --ouro: #E8B84E; --ouro-vivo: #E8B84E;
+  --ok: #79D3A0; --ok-suave: #15301F; --alerta: #F3AA62; --alerta-suave: #3A2513;
+  color-scheme: dark;
+}
+
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--tinta);
+  font: 400 17px/1.5 var(--f-texto);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(var(--abas-h) + env(safe-area-inset-bottom, 0px) + 32px);
+}
+main { max-width: 640px; margin: 0 auto; display: grid; gap: 40px; }
+a { color: var(--azul); text-underline-offset: 3px; }
+a:focus-visible, summary:focus-visible, input:focus-visible { outline: 3px solid var(--ouro-vivo); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.1; font-weight: 700; }
+p { margin: 0; }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.rotulo { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--apagado); }
+.ico { width: 1.1em; height: 1.1em; fill: currentColor; flex: none; }
+section[id], .dia, .bilhete { scroll-margin-top: 16px; }
+
+/* Capa */
+.capa { padding-top: 28px; display: grid; gap: 10px; }
+.capa h1 { font-size: clamp(36px, 10vw, 48px); font-weight: 800; letter-spacing: -.01em; }
+.capa-rota { font-family: var(--f-display); font-style: italic; font-size: 21px; color: var(--apagado); }
+.capa-numeros { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 8px 0 0; }
+.capa-numeros div { display: grid; }
+.capa-numeros dt { order: 2; font-size: 13px; color: var(--apagado); }
+.capa-numeros dd { margin: 0; font-family: var(--f-display); font-size: 30px; font-weight: 700; line-height: 1.1; color: var(--azul); }
+
+.agora { margin-top: 14px; background: var(--superficie); border: 2px solid var(--ouro-vivo); border-radius: 14px; padding: 16px; display: grid; gap: 8px; }
+.agora .rotulo { color: var(--ouro); }
+.agora-titulo { font-family: var(--f-display); font-size: 23px; font-weight: 700; line-height: 1.15; }
+.agora-linha { color: var(--apagado); }
+.agora-lembrete { background: var(--alerta-suave); color: var(--alerta); border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 15px; }
+.agora a.ir { font-weight: 700; }
+
+/* Faixa em escala */
+.faixa { display: grid; gap: 8px; }
+.faixa-barra { display: flex; gap: 3px; height: 38px; }
+.seg { flex-basis: 0; min-width: 0; display: flex; align-items: center; justify-content: center; background: var(--azul); color: var(--sobre-azul); text-decoration: none; font-size: 13px; font-weight: 700; border-radius: 3px; overflow: hidden; }
+.seg:first-child { border-radius: 8px 3px 3px 8px; }
+.seg:last-child { border-radius: 3px 8px 8px 3px; }
+.seg.hoje { background: var(--ouro-vivo); color: #1B1300; }
+.faixa-pontas { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: var(--apagado); }
+
+/* Seções */
+.secao-cabeca { display: grid; gap: 4px; margin-bottom: 20px; }
+.secao-cabeca h2 { font-size: 30px; }
+.secao-cabeca p { color: var(--apagado); font-size: 15px; }
+
+/* Roteiro: trilha */
+.trilha { list-style: none; margin: 0; padding: 0; }
+.dia { display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 12px; padding-bottom: 36px; position: relative; }
+.dia::before { content: ""; position: absolute; left: 25px; top: 18px; bottom: 0; width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--trilha) 0 7px, transparent 7px 13px); }
+.dia:last-child::before { display: none; }
+.marco { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 4px; position: relative; }
+.marco-ponto { width: 18px; height: 18px; border-radius: 50%; background: var(--azul); border: 4px solid var(--bg); box-shadow: 0 0 0 2px var(--azul); }
+.dia-parado .marco-ponto { background: var(--bg); box-shadow: 0 0 0 2px var(--trilha); }
+.marco-km { font-size: 13px; font-weight: 700; color: var(--apagado); background: var(--bg); padding: 2px 0; line-height: 1.2; text-align: center; }
+.marco-km::after { content: " km"; font-weight: 400; display: block; font-size: 11px; }
+.dia-corpo { display: grid; gap: 10px; min-width: 0; }
+.dia-quando { font-size: 14px; color: var(--apagado); display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; }
+.dia-quando strong { color: var(--tinta); }
+.hoje-tag { display: none; background: var(--ouro-vivo); color: #1B1300; font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; border-radius: 99px; padding: 1px 9px; }
+.dia.hoje .hoje-tag { display: inline-block; }
+.dia.hoje .marco-ponto { background: var(--ouro-vivo); box-shadow: 0 0 0 2px var(--ouro-vivo); }
+.dia-trecho { font-size: 25px; }
+.seta { color: var(--azul); font-family: var(--f-texto); font-weight: 400; }
+.chegada-a { font-style: italic; font-weight: 500; color: var(--apagado); }
+.dia-via { font-family: var(--f-display); font-style: italic; color: var(--apagado); margin-top: -6px; }
+.dia-km { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.km-grande { font-family: var(--f-display); font-size: 34px; font-weight: 800; color: var(--azul); line-height: 1; }
+.dia-km-extra { font-size: 14px; color: var(--apagado); flex-basis: 100%; }
+.dia-terreno { color: var(--tinta); }
+.dia-obs { font-size: 15px; color: var(--apagado); display: grid; gap: 2px; }
+
+.pouso { background: var(--superficie); border: 1px solid var(--linha); border-radius: 12px; padding: 14px; display: grid; gap: 8px; }
+.pouso-nome { font-family: var(--f-display); font-size: 21px; font-weight: 700; line-height: 1.2; }
+.selos { display: flex; flex-wrap: wrap; gap: 6px; }
+.selo { font-size: 13.5px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+.selo.ok { background: var(--ok-suave); color: var(--ok); }
+.selo.alerta { background: var(--alerta-suave); color: var(--alerta); }
+.selo.neutro { background: var(--azul-suave); color: var(--tinta); font-weight: 400; }
+
+.fones { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fones li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.fone { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 10px; background: var(--azul); color: var(--sobre-azul); font-weight: 700; font-size: 17px; text-decoration: none; user-select: text; }
+.fone-quem { color: var(--apagado); font-size: 15px; }
+.fones-compactos .fone { min-height: 40px; padding: 6px 12px; font-size: 16px; background: var(--azul-suave); color: var(--azul); }
+.mapa-link { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; justify-self: start; padding: 4px 0; }
+
+.onibus-link { display: flex; gap: 10px; align-items: flex-start; background: var(--azul-suave); color: var(--tinta); border-radius: 12px; padding: 12px 14px; text-decoration: none; font-size: 15.5px; }
+.onibus-link .ico { color: var(--azul); width: 22px; height: 22px; margin-top: 1px; }
+.onibus-ver { color: var(--azul); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Passagens */
+.bilhetes { display: grid; gap: 24px; }
+.bilhete { background: var(--superficie); border: 1px solid var(--linha); border-radius: 16px; padding: 18px 18px 20px; display: grid; gap: 16px; position: relative; }
+.b-topo { display: grid; gap: 2px; }
+.b-topo .rotulo { color: var(--azul); }
+.b-empresa { font-size: 15px; color: var(--apagado); }
+.b-horas { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: start; }
+.b-ponto { display: grid; gap: 2px; min-width: 0; }
+.b-dir { text-align: right; }
+.b-hora { font-family: var(--f-display); font-size: 36px; font-weight: 800; line-height: 1; }
+.b-local { font-weight: 700; }
+.b-sub { font-size: 14px; color: var(--apagado); }
+.b-duracao { align-self: center; font-size: 13px; color: var(--apagado); padding: 2px 8px; border-top: 2px dashed var(--trilha); margin-top: 18px; min-width: 44px; text-align: center; }
+.b-dados { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; }
+.b-dados div { display: grid; }
+.b-dados dt { font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--apagado); }
+.b-dados dd { margin: 0; font-size: 19px; font-weight: 700; }
+.picote { height: 2px; margin: 0 -18px; background: repeating-linear-gradient(to right, var(--linha) 0 8px, transparent 8px 14px); position: relative; }
+.picote::before, .picote::after { content: ""; position: absolute; top: -11px; width: 22px; height: 22px; border-radius: 50%; background: var(--bg); border: 1px solid var(--linha); }
+.picote::before { left: -12px; clip-path: inset(0 0 0 50%); }
+.picote::after { right: -12px; clip-path: inset(0 50% 0 0); }
+.b-qr { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: center; }
+.b-qr-embarque { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+.qr-caixa { display: block; background: var(--qr-fundo); border-radius: 10px; padding: 6px; border: 1px solid var(--linha); width: 100%; }
+.b-qr-embarque .qr-caixa { width: min(100%, 280px); }
+.qr-svg { display: block; width: 100%; height: auto; }
+.qr-fundo { fill: var(--qr-fundo); }
+.qr-tinta { fill: var(--qr-tinta); }
+.b-qr-legenda { font-size: 14.5px; color: var(--apagado); }
+.b-aviso { font-size: 15px; background: var(--alerta-suave); color: var(--alerta); border-radius: 10px; padding: 10px 12px; font-weight: 700; }
+.acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.botao { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border-radius: 10px; border: 1.5px solid var(--azul); color: var(--azul); font-weight: 700; font-size: 15.5px; text-decoration: none; }
+.botao-forte { background: var(--azul); color: var(--sobre-azul); }
+.b-pag summary { cursor: pointer; font-weight: 700; color: var(--azul); padding: 4px 0; }
+.b-pag dl { margin: 8px 0 0; display: grid; gap: 4px; }
+.b-pag dl div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--linha); padding: 4px 0; }
+.b-pag dl div:last-child { border-bottom: 0; font-weight: 700; }
+.b-pag dt { color: var(--apagado); }
+.b-pag dd { margin: 0; }
+
+/* QR em tela cheia (funciona sem JavaScript, via :target) */
+.qr-tela { display: none; position: fixed; inset: 0; z-index: 50; background: var(--qr-fundo); color: var(--qr-tinta);
+  flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.qr-tela:target { display: flex; }
+.qr-tela .qr-svg { width: min(92vw, 68vh); }
+.qr-tela-titulo { font-weight: 700; font-size: 18px; text-align: center; }
+.qr-tela-dica { font-size: 15px; }
+.qr-fechar { color: var(--qr-tinta); border: 2px solid var(--qr-tinta); border-radius: 10px; padding: 10px 28px; font-weight: 700; text-decoration: none; }
+
+/* Contatos */
+.sub-titulo { font-size: 21px; margin: 26px 0 10px; }
+.sub-titulo:first-of-type { margin-top: 0; }
+.agenda { list-style: none; margin: 0; padding: 0; display: grid; }
+.agenda > li { display: grid; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--linha); }
+.agenda > li:first-child { padding-top: 0; }
+.ag-quando { font-size: 14px; color: var(--apagado); }
+.ag-nome { font-weight: 700; }
+.sem-fone { font-size: 14px; color: var(--apagado); font-style: italic; }
+.emergencia { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.emergencia li { display: flex; align-items: center; gap: 8px; }
+.fone-emerg { background: var(--alerta-suave); color: var(--alerta); font-size: 19px; }
+
+/* Informações */
+.info { margin: 0; display: grid; gap: 0; }
+.info-item { padding: 12px 0; border-bottom: 1px solid var(--linha); display: grid; gap: 2px; }
+.info-item:first-child { padding-top: 0; }
+.info dt { font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--apagado); }
+.info dd { margin: 0; overflow-wrap: anywhere; }
+.levar { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; }
+.levar label { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; cursor: pointer; }
+.levar input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--azul); flex: none; }
+.levar input:checked + span { color: var(--apagado); text-decoration: line-through; }
+.nota-fonte { margin-top: 20px; font-size: 14.5px; color: var(--apagado); display: grid; gap: 4px; }
+.rodape { font-size: 13px; color: var(--apagado); text-align: center; }
+
+/* Abas */
+.abas { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--superficie); border-top: 1px solid var(--linha);
+  display: flex; justify-content: center;
+  padding: 0 max(8px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(8px, env(safe-area-inset-left, 0px)); }
+.abas-dentro { display: flex; width: 100%; max-width: 640px; }
+.abas a { flex: 1; min-width: 0; height: var(--abas-h); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--apagado); text-decoration: none; font-size: 12.5px; font-weight: 700; }
+.abas a .ico { width: 24px; height: 24px; }
+.abas a:active, .abas a:hover { color: var(--azul); }
+</style>
+<!--CORPO-->
+<main>
+  <header class="capa">
+    <p class="rotulo">Peregrinação · <span class="num">{{PERIODO}}</span></p>
+    <h1>{{TITULO}}</h1>
+    <p class="capa-rota">{{ROTA}}</p>
+    <dl class="capa-numeros">
+      <div><dt>a pé</dt><dd class="num">{{TOTAL_KM}} km</dd></div>
+      <div><dt>etapas</dt><dd class="num">{{ETAPAS}}</dd></div>
+      <div><dt>noites</dt><dd class="num">{{NOITES}}</dd></div>
+    </dl>
+    <div id="agora" class="agora" hidden></div>
+  </header>
+
+  {{FAIXA}}
+
+  <section id="roteiro">
+    <div class="secao-cabeca">
+      <h2>Roteiro dia a dia</h2>
+      <p>Ao lado de cada dia, o km acumulado na chegada.</p>
+    </div>
+    <ol class="trilha">{{DIAS}}</ol>
+  </section>
+
+  <section id="passagens">
+    <div class="secao-cabeca">
+      <h2>Passagens</h2>
+      <p>Toque no QR code para abrir em tela cheia.</p>
+    </div>
+    <div class="bilhetes">{{PASSAGENS}}</div>
+  </section>
+
+  <section id="contatos">
+    <div class="secao-cabeca">
+      <h2>Contatos</h2>
+      <p>Toque no número para ligar.</p>
+    </div>
+    {{CONTATOS}}
+  </section>
+
+  <section id="info">
+    <div class="secao-cabeca">
+      <h2>Informações gerais</h2>
+    </div>
+    {{INFO}}
+  </section>
+
+  <p class="rodape">Dados da planilha Caminho_Nha_Chica_Roteiro.xlsx · gerado em {{GERADO}}</p>
+</main>
+
+{{TELAS_QR}}
+
+<nav class="abas" aria-label="Seções">
+  <div class="abas-dentro">
+    <a href="#roteiro"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2a3 3 0 0 0-3 3c0 2.2 3 5.5 3 5.5S21 7.2 21 5a3 3 0 0 0-3-3zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM6 12a3 3 0 0 0-3 3c0 2.2 3 5.5 3 5.5S9 17.2 9 15a3 3 0 0 0-3-3zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm4.5 3H14a2.5 2.5 0 0 0 0-5h-4a1.5 1.5 0 0 1 0-3h4.5v-2H10a3.5 3.5 0 0 0 0 7h4a.5.5 0 0 1 0 1h-3.5z"/></svg>Roteiro</a>
+    <a href="#passagens"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v4a2 2 0 1 1 0 4v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 1 1 0-4zm-7 7.5h-2v-2h2zm0-4.5h-2v-2h2zm0-4.5h-2v-2h2z"/></svg>Passagens</a>
+    <a href="#contatos"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>Contatos</a>
+    <a href="#info"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>Info</a>
+  </div>
+</nav>
+
+<script>
+(function () {
+  var DIAS = {{DADOS}};
+
+  function el(tag, cls, filhos) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    (filhos || []).forEach(function (f) { n.append(f); });
+    return n;
+  }
+  function link(href, cls, texto) { var a = el("a", cls, [texto]); a.href = href; return a; }
+  function iso(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function diasAte(de, ate) {
+    return Math.round((Date.parse(ate + "T12:00:00") - Date.parse(de + "T12:00:00")) / 864e5);
+  }
+  function fones(lista) {
+    var ul = el("ul", "fones");
+    lista.forEach(function (f) {
+      var li = el("li", "", [link(f.href, "fone num", f.numero)]);
+      if (f.quem) li.append(" ", el("span", "fone-quem", [f.quem]));
+      ul.append(li);
+    });
+    return ul;
+  }
+
+  var teste = new URLSearchParams(location.search).get("data");
+  var hoje = /^\d{4}-\d{2}-\d{2}$/.test(teste || "") ? teste : iso(new Date());
+  var caixa = document.getElementById("agora");
+  var i = DIAS.findIndex(function (d) { return d.data === hoje; });
+
+  if (hoje < DIAS[0].data) {
+    var n = diasAte(hoje, DIAS[0].data);
+    var ida = DIAS[0].onibus;
+    caixa.append(
+      el("p", "rotulo", [n === 1 ? "Amanhã começa" : "Faltam " + n + " dias"]),
+      el("p", "agora-titulo", [DIAS[0].quando + ": " + DIAS[0].trecho])
+    );
+    if (ida) {
+      caixa.append(el("p", "agora-linha", ["Ônibus de " + ida.origem.split(",")[0] + " às " + ida.partida + "."]),
+        link("#" + ida.id, "ir", "Ver passagem de ida"));
+    }
+    caixa.hidden = false;
+  } else if (i >= 0) {
+    var d = DIAS[i], amanha = DIAS[i + 1];
+    document.getElementById(d.id).classList.add("hoje");
+    var seg = document.querySelector('.seg[data-dia="' + d.id + '"]');
+    if (seg) seg.classList.add("hoje");
+    caixa.append(el("p", "rotulo", ["Hoje · " + d.dia + " · " + d.quando]), el("p", "agora-titulo", [d.trecho]));
+    if (d.km) caixa.append(el("p", "agora-linha num", [d.km + " km hoje · depois faltam " + d.faltam + " km"]));
+    if (d.onibus) caixa.append(el("p", "agora-linha", ["Ônibus às " + d.onibus.partida + " em " + d.onibus.origem.split(",")[0] + "."]));
+    if (d.pouso) {
+      caixa.append(el("p", "agora-linha", ["Pouso: ", el("strong", "", [d.pouso.nome])]));
+      if (d.pouso.fones.length) caixa.append(fones(d.pouso.fones));
+    }
+    if (amanha && amanha.pouso && amanha.pouso.notas.some(function (t) { return /véspera/i.test(t); })) {
+      caixa.append(el("p", "agora-lembrete", ["Ligue hoje para confirmar o pouso de amanhã: " + amanha.pouso.nome + "."]));
+    }
+    caixa.append(link("#" + (d.onibus && !d.km ? d.onibus.id : d.id), "ir", d.onibus && !d.km ? "Ver passagem" : "Ver o dia completo"));
+    caixa.hidden = false;
+  }
+
+  // Lista "o que levar": marcações ficam guardadas só neste aparelho.
+  document.querySelectorAll("input[data-guardar]").forEach(function (cx) {
+    var chave = "nhachica:" + cx.id;
+    try { cx.checked = localStorage.getItem(chave) === "1"; } catch (e) {}
+    cx.addEventListener("change", function () {
+      try { localStorage.setItem(chave, cx.checked ? "1" : "0"); } catch (e) {}
+    });
+  });
+})();
+</script>
