@@ -65,7 +65,7 @@ p { margin: 0; }
 .num { font-variant-numeric: tabular-nums lining-nums; }
 .rotulo { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--apagado); }
 .ico { width: 1.1em; height: 1.1em; fill: currentColor; flex: none; }
-section[id], .dia, .bilhete { scroll-margin-top: 16px; }
+section[id], .dia, .bilhete { scroll-margin-top: 104px; }
 
 /* Capa */
 .capa { padding-top: 28px; display: grid; gap: 10px; }
@@ -76,21 +76,26 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
 .capa-numeros dt { order: 2; font-size: 13px; color: var(--apagado); }
 .capa-numeros dd { margin: 0; font-family: var(--f-display); font-size: 30px; font-weight: 700; line-height: 1.1; color: var(--azul); }
 
-.agora { margin-top: 14px; background: var(--superficie); border: 2px solid var(--ouro-vivo); border-radius: 14px; padding: 16px; display: grid; gap: 8px; }
-.agora .rotulo { color: var(--ouro); }
-.agora-titulo { font-family: var(--f-display); font-size: 23px; font-weight: 700; line-height: 1.15; }
-.agora-linha { color: var(--apagado); }
-.agora-lembrete { background: var(--alerta-suave); color: var(--alerta); border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 15px; }
-.agora a.ir { font-weight: 700; }
+.contagem { color: var(--ouro); font-weight: 700; }
+.contagem::before { content: " · "; color: var(--apagado); font-weight: 400; }
+.contagem a { color: inherit; }
 
-/* Faixa em escala */
-.faixa { display: grid; gap: 8px; }
+/* Faixa em escala, fixa no topo como menu dos dias */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 16; background: var(--bg); }
+.faixa { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: grid; gap: 6px; background: var(--bg);
+  border-bottom: 1px solid var(--linha);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .faixa-barra { display: flex; gap: 3px; height: 38px; }
+.faixa-barra.com-atual .seg:not(.atual):not(.hoje) { background: var(--azul-suave); color: var(--azul); }
+@media (prefers-reduced-motion: no-preference) { .seg { transition: background-color .15s, color .15s; } }
 .seg { flex-basis: 0; min-width: 0; display: flex; align-items: center; justify-content: center; background: var(--azul); color: var(--sobre-azul); text-decoration: none; font-size: 13px; font-weight: 700; border-radius: 3px; overflow: hidden; }
 .seg:first-child { border-radius: 8px 3px 3px 8px; }
 .seg:last-child { border-radius: 3px 8px 8px 3px; }
 .seg.hoje { background: var(--ouro-vivo); color: #1B1300; }
-.faixa-pontas { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: var(--apagado); }
+.faixa-pontas { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--apagado); }
+.faixa-meio { font-weight: 700; color: var(--tinta); }
 
 /* Seções */
 .secao-cabeca { display: grid; gap: 4px; margin-bottom: 20px; }
@@ -235,11 +240,10 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
     <h1>{{TITULO}}</h1>
     <p class="capa-rota">{{ROTA}}</p>
     <dl class="capa-numeros">
-      <div><dt>a pé</dt><dd class="num">{{TOTAL_KM}} km</dd></div>
+      <div><dt>a pé<span id="contagem" class="contagem" hidden></span></dt><dd class="num">{{TOTAL_KM}} km</dd></div>
       <div><dt>etapas</dt><dd class="num">{{ETAPAS}}</dd></div>
       <div><dt>noites</dt><dd class="num">{{NOITES}}</dd></div>
     </dl>
-    <div id="agora" class="agora" hidden></div>
   </header>
 
   {{FAIXA}}
@@ -306,51 +310,49 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
   function diasAte(de, ate) {
     return Math.round((Date.parse(ate + "T12:00:00") - Date.parse(de + "T12:00:00")) / 864e5);
   }
-  function fones(lista) {
-    var ul = el("ul", "fones");
-    lista.forEach(function (f) {
-      var li = el("li", "", [link(f.href, "fone num", f.numero)]);
-      if (f.quem) li.append(" ", el("span", "fone-quem", [f.quem]));
-      ul.append(li);
-    });
-    return ul;
-  }
 
   var teste = new URLSearchParams(location.search).get("data");
   var hoje = /^\d{4}-\d{2}-\d{2}$/.test(teste || "") ? teste : iso(new Date());
-  var caixa = document.getElementById("agora");
+  var contagem = document.getElementById("contagem");
   var i = DIAS.findIndex(function (d) { return d.data === hoje; });
 
   if (hoje < DIAS[0].data) {
     var n = diasAte(hoje, DIAS[0].data);
-    var ida = DIAS[0].onibus;
-    caixa.append(
-      el("p", "rotulo", [n === 1 ? "Amanhã começa" : "Faltam " + n + " dias"]),
-      el("p", "agora-titulo", [DIAS[0].quando + ": " + DIAS[0].trecho])
-    );
-    if (ida) {
-      caixa.append(el("p", "agora-linha", ["Ônibus de " + ida.origem.split(",")[0] + " às " + ida.partida + "."]),
-        link("#" + ida.id, "ir", "Ver passagem de ida"));
-    }
-    caixa.hidden = false;
+    contagem.append(n === 1 ? "começa amanhã" : "faltam " + n + " dias");
+    contagem.hidden = false;
   } else if (i >= 0) {
-    var d = DIAS[i], amanha = DIAS[i + 1];
+    var d = DIAS[i];
     document.getElementById(d.id).classList.add("hoje");
     var seg = document.querySelector('.seg[data-dia="' + d.id + '"]');
     if (seg) seg.classList.add("hoje");
-    caixa.append(el("p", "rotulo", ["Hoje · " + d.dia + " · " + d.quando]), el("p", "agora-titulo", [d.trecho]));
-    if (d.km) caixa.append(el("p", "agora-linha num", [d.km + " km hoje · depois faltam " + d.faltam + " km"]));
-    if (d.onibus) caixa.append(el("p", "agora-linha", ["Ônibus às " + d.onibus.partida + " em " + d.onibus.origem.split(",")[0] + "."]));
-    if (d.pouso) {
-      caixa.append(el("p", "agora-linha", ["Pouso: ", el("strong", "", [d.pouso.nome])]));
-      if (d.pouso.fones.length) caixa.append(fones(d.pouso.fones));
-    }
-    if (amanha && amanha.pouso && amanha.pouso.notas.some(function (t) { return /véspera/i.test(t); })) {
-      caixa.append(el("p", "agora-lembrete", ["Ligue hoje para confirmar o pouso de amanhã: " + amanha.pouso.nome + "."]));
-    }
-    caixa.append(link("#" + (d.onibus && !d.km ? d.onibus.id : d.id), "ir", d.onibus && !d.km ? "Ver passagem" : "Ver o dia completo"));
-    caixa.hidden = false;
+    contagem.append(link("#" + d.id, "", "hoje é o " + d.dia));
+    contagem.hidden = false;
   }
+
+  // Barra de km fixa: destaca a etapa que está na tela enquanto o roteiro rola.
+  var faixa = document.querySelector(".faixa");
+  var barra = document.querySelector(".faixa-barra");
+  var meio = document.getElementById("faixa-meio");
+  var padrao = meio.textContent;
+  var segs = Array.prototype.slice.call(barra.querySelectorAll(".seg"));
+  var cartoes = DIAS.map(function (d) { return document.getElementById(d.id); });
+  var depois = document.getElementById("passagens");
+  var agendado = false;
+  function marcar() {
+    agendado = false;
+    var limite = faixa.getBoundingClientRect().bottom + 24;
+    var atual = null;
+    if (depois.getBoundingClientRect().top > limite) {
+      cartoes.forEach(function (c, k) { if (c.getBoundingClientRect().top <= limite) atual = DIAS[k]; });
+    }
+    segs.forEach(function (s) { s.classList.toggle("atual", !!atual && s.dataset.dia === atual.id); });
+    barra.classList.toggle("com-atual", !!(atual && atual.km));
+    meio.textContent = atual ? atual.dia + (atual.km ? " · " + atual.km + " km" : "") : padrao;
+  }
+  window.addEventListener("scroll", function () {
+    if (!agendado) { agendado = true; requestAnimationFrame(marcar); }
+  }, { passive: true });
+  marcar();
 
   // Lista "o que levar": marcações ficam guardadas só neste aparelho.
   document.querySelectorAll("input[data-guardar]").forEach(function (cx) {

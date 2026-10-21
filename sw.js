@@ -1,5 +1,5 @@
 // Guarda o app no aparelho para abrir sem internet. Gerado por build.py.
-var CACHE = "nhachica-37c637d71a";
+var CACHE = "nhachica-23505fe273";
 var ARQUIVOS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", function (e) {

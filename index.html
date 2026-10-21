@@ -75,7 +75,7 @@ p { margin: 0; }
 .num { font-variant-numeric: tabular-nums lining-nums; }
 .rotulo { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--apagado); }
 .ico { width: 1.1em; height: 1.1em; fill: currentColor; flex: none; }
-section[id], .dia, .bilhete { scroll-margin-top: 16px; }
+section[id], .dia, .bilhete { scroll-margin-top: 104px; }
 
 /* Capa */
 .capa { padding-top: 28px; display: grid; gap: 10px; }
@@ -86,21 +86,26 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
 .capa-numeros dt { order: 2; font-size: 13px; color: var(--apagado); }
 .capa-numeros dd { margin: 0; font-family: var(--f-display); font-size: 30px; font-weight: 700; line-height: 1.1; color: var(--azul); }
 
-.agora { margin-top: 14px; background: var(--superficie); border: 2px solid var(--ouro-vivo); border-radius: 14px; padding: 16px; display: grid; gap: 8px; }
-.agora .rotulo { color: var(--ouro); }
-.agora-titulo { font-family: var(--f-display); font-size: 23px; font-weight: 700; line-height: 1.15; }
-.agora-linha { color: var(--apagado); }
-.agora-lembrete { background: var(--alerta-suave); color: var(--alerta); border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 15px; }
-.agora a.ir { font-weight: 700; }
+.contagem { color: var(--ouro); font-weight: 700; }
+.contagem::before { content: " · "; color: var(--apagado); font-weight: 400; }
+.contagem a { color: inherit; }
 
-/* Faixa em escala */
-.faixa { display: grid; gap: 8px; }
+/* Faixa em escala, fixa no topo como menu dos dias */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 16; background: var(--bg); }
+.faixa { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: grid; gap: 6px; background: var(--bg);
+  border-bottom: 1px solid var(--linha);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .faixa-barra { display: flex; gap: 3px; height: 38px; }
+.faixa-barra.com-atual .seg:not(.atual):not(.hoje) { background: var(--azul-suave); color: var(--azul); }
+@media (prefers-reduced-motion: no-preference) { .seg { transition: background-color .15s, color .15s; } }
 .seg { flex-basis: 0; min-width: 0; display: flex; align-items: center; justify-content: center; background: var(--azul); color: var(--sobre-azul); text-decoration: none; font-size: 13px; font-weight: 700; border-radius: 3px; overflow: hidden; }
 .seg:first-child { border-radius: 8px 3px 3px 8px; }
 .seg:last-child { border-radius: 3px 8px 8px 3px; }
 .seg.hoje { background: var(--ouro-vivo); color: #1B1300; }
-.faixa-pontas { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: var(--apagado); }
+.faixa-pontas { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--apagado); }
+.faixa-meio { font-weight: 700; color: var(--tinta); }
 
 /* Seções */
 .secao-cabeca { display: grid; gap: 4px; margin-bottom: 20px; }
@@ -246,14 +251,13 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
     <h1>Caminho de Nhá Chica</h1>
     <p class="capa-rota">Inconfidentes → Baependi · MG</p>
     <dl class="capa-numeros">
-      <div><dt>a pé</dt><dd class="num">253,5 km</dd></div>
+      <div><dt>a pé<span id="contagem" class="contagem" hidden></span></dt><dd class="num">253,5 km</dd></div>
       <div><dt>etapas</dt><dd class="num">10</dd></div>
       <div><dt>noites</dt><dd class="num">11</dd></div>
     </dl>
-    <div id="agora" class="agora" hidden></div>
   </header>
 
-  <section class="faixa" aria-label="Quilômetros de cada etapa, em escala"><p class="rotulo">km por etapa · Dia 02 a Dia 11</p><div class="faixa-barra"><a class="seg" href="#dia-02" style="flex-grow:20.0" data-dia="dia-02" aria-label="Dia 02: 20 km"><span class="num">20</span></a><a class="seg" href="#dia-03" style="flex-grow:25.0" data-dia="dia-03" aria-label="Dia 03: 25 km"><span class="num">25</span></a><a class="seg" href="#dia-04" style="flex-grow:21.0" data-dia="dia-04" aria-label="Dia 04: 21 km"><span class="num">21</span></a><a class="seg" href="#dia-05" style="flex-grow:25.5" data-dia="dia-05" aria-label="Dia 05: 25,5 km"><span class="num">25,5</span></a><a class="seg" href="#dia-06" style="flex-grow:20.0" data-dia="dia-06" aria-label="Dia 06: 20 km"><span class="num">20</span></a><a class="seg" href="#dia-07" style="flex-grow:24.0" data-dia="dia-07" aria-label="Dia 07: 24 km"><span class="num">24</span></a><a class="seg" href="#dia-08" style="flex-grow:26.0" data-dia="dia-08" aria-label="Dia 08: 26 km"><span class="num">26</span></a><a class="seg" href="#dia-09" style="flex-grow:31.0" data-dia="dia-09" aria-label="Dia 09: 31 km"><span class="num">31</span></a><a class="seg" href="#dia-10" style="flex-grow:34.0" data-dia="dia-10" aria-label="Dia 10: 34 km"><span class="num">34</span></a><a class="seg" href="#dia-11" style="flex-grow:27.0" data-dia="dia-11" aria-label="Dia 11: 27 km"><span class="num">27</span></a></div><div class="faixa-pontas"><span>Inconfidentes</span><span class="num">253,5 km</span><span>Baependi</span></div></section>
+  <nav class="faixa" aria-label="Etapas em escala de km; toque para ir ao dia"><div class="faixa-barra"><a class="seg" href="#dia-02" style="flex-grow:20.0" data-dia="dia-02" aria-label="Dia 02: 20 km"><span class="num">20</span></a><a class="seg" href="#dia-03" style="flex-grow:25.0" data-dia="dia-03" aria-label="Dia 03: 25 km"><span class="num">25</span></a><a class="seg" href="#dia-04" style="flex-grow:21.0" data-dia="dia-04" aria-label="Dia 04: 21 km"><span class="num">21</span></a><a class="seg" href="#dia-05" style="flex-grow:25.5" data-dia="dia-05" aria-label="Dia 05: 25,5 km"><span class="num">25,5</span></a><a class="seg" href="#dia-06" style="flex-grow:20.0" data-dia="dia-06" aria-label="Dia 06: 20 km"><span class="num">20</span></a><a class="seg" href="#dia-07" style="flex-grow:24.0" data-dia="dia-07" aria-label="Dia 07: 24 km"><span class="num">24</span></a><a class="seg" href="#dia-08" style="flex-grow:26.0" data-dia="dia-08" aria-label="Dia 08: 26 km"><span class="num">26</span></a><a class="seg" href="#dia-09" style="flex-grow:31.0" data-dia="dia-09" aria-label="Dia 09: 31 km"><span class="num">31</span></a><a class="seg" href="#dia-10" style="flex-grow:34.0" data-dia="dia-10" aria-label="Dia 10: 34 km"><span class="num">34</span></a><a class="seg" href="#dia-11" style="flex-grow:27.0" data-dia="dia-11" aria-label="Dia 11: 27 km"><span class="num">27</span></a></div><div class="faixa-pontas"><span>Inconfidentes</span><span class="faixa-meio num" id="faixa-meio">km por etapa</span><span>Baependi</span></div></nav>
 
   <section id="roteiro">
     <div class="secao-cabeca">
@@ -302,7 +306,7 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
 
 <script>
 (function () {
-  var DIAS = [{"id": "dia-01", "data": "2026-11-20", "dia": "Dia 01", "quando": "sex, 20 nov", "trecho": "Chegada a Inconfidentes", "km": "", "faltam": "253,5", "pouso": {"nome": "Pousada Santa Varanda", "fones": [{"numero": "(35) 99879-4580", "href": "tel:+5535998794580", "quem": "Selma"}], "notas": ["Adiantamento de R$ 65,00"]}, "onibus": {"id": "ida", "titulo": "Ida", "partida": "15:30", "origem": "São Paulo, SP"}}, {"id": "dia-02", "data": "2026-11-21", "dia": "Dia 02", "quando": "sáb, 21 nov", "trecho": "Inconfidentes → Borda da Mata", "km": "20", "faltam": "233,5", "pouso": {"nome": "Pousada no Caminho", "fones": [], "notas": ["Adiantamento de R$ 75,00"]}, "onibus": null}, {"id": "dia-03", "data": "2026-11-22", "dia": "Dia 03", "quando": "dom, 22 nov", "trecho": "Borda da Mata → Congonhal", "km": "25", "faltam": "208,5", "pouso": {"nome": "Hotel Escalada", "fones": [{"numero": "(35) 99821-6239", "href": "tel:+5535998216239", "quem": "Silvana"}], "notas": ["pediu pra confirmar na véspera"]}, "onibus": null}, {"id": "dia-04", "data": "2026-11-23", "dia": "Dia 04", "quando": "seg, 23 nov", "trecho": "Congonhal → Espírito Santo do Dourado", "km": "21", "faltam": "187,5", "pouso": {"nome": "Pousada Bella Vista (João Peru)", "fones": [{"numero": "(35) 99992-9470", "href": "tel:+5535999929470", "quem": "João Peru"}, {"numero": "(35) 99717-5908", "href": "tel:+5535997175908", "quem": "Rita"}], "notas": []}, "onibus": null}, {"id": "dia-05", "data": "2026-11-24", "dia": "Dia 05", "quando": "ter, 24 nov", "trecho": "Espírito Santo do Dourado → Silvianópolis", "km": "25,5", "faltam": "162", "pouso": {"nome": "Hotel Luciana", "fones": [{"numero": "(35) 99717-9867", "href": "tel:+5535997179867", "quem": "Luciana"}], "notas": []}, "onibus": null}, {"id": "dia-06", "data": "2026-11-25", "dia": "Dia 06", "quando": "qua, 25 nov", "trecho": "Silvianópolis → Careaçu", "km": "20", "faltam": "142", "pouso": {"nome": "Hotel e Pousada Arlen 03 (castelo)", "fones": [{"numero": "(35) 3452-1112", "href": "tel:+553534521112", "quem": "Silvia"}], "notas": []}, "onibus": null}, {"id": "dia-07", "data": "2026-11-26", "dia": "Dia 07", "quando": "qui, 26 nov", "trecho": "Careaçu → Heliodora", "km": "24", "faltam": "118", "pouso": {"nome": "Hotel Vilarejo", "fones": [{"numero": "(35) 99962-2630", "href": "tel:+5535999622630", "quem": ""}, {"numero": "(35) 3457-1156", "href": "tel:+553534571156", "quem": "Sheila"}], "notas": []}, "onibus": null}, {"id": "dia-08", "data": "2026-11-27", "dia": "Dia 08", "quando": "sex, 27 nov", "trecho": "Heliodora → Conceição das Pedras", "km": "26", "faltam": "92", "pouso": {"nome": "Pousada do Ginho", "fones": [{"numero": "(35) 9857-1838", "href": "tel:+553598571838", "quem": ""}], "notas": []}, "onibus": null}, {"id": "dia-09", "data": "2026-11-28", "dia": "Dia 09", "quando": "sáb, 28 nov", "trecho": "Conceição das Pedras → Cristina", "km": "31", "faltam": "61", "pouso": {"nome": "Pousada Casarão dos Noronha Kauage", "fones": [{"numero": "(35) 98763335", "href": "tel:+553598763335", "quem": ""}], "notas": ["Adiantamento de 127,50"]}, "onibus": null}, {"id": "dia-10", "data": "2026-11-29", "dia": "Dia 10", "quando": "dom, 29 nov", "trecho": "Cristina → Soledade de Minas", "km": "34", "faltam": "27", "pouso": {"nome": "Hotel São Lucas", "fones": [{"numero": "(35) 33341516", "href": "tel:+553533341516", "quem": ""}], "notas": []}, "onibus": null}, {"id": "dia-11", "data": "2026-11-30", "dia": "Dia 11", "quando": "seg, 30 nov", "trecho": "Soledade de Minas → Baependi", "km": "27", "faltam": "0", "pouso": {"nome": "Pousada Golden Gardem", "fones": [], "notas": []}, "onibus": null}, {"id": "dia-12", "data": "2026-12-01", "dia": "Dia 12", "quando": "ter, 1 dez", "trecho": "Caxambu → São Paulo", "km": "", "faltam": "0", "pouso": null, "onibus": {"id": "volta", "titulo": "Volta", "partida": "11:30", "origem": "Caxambu, MG"}}];
+  var DIAS = [{"id": "dia-01", "data": "2026-11-20", "dia": "Dia 01", "km": ""}, {"id": "dia-02", "data": "2026-11-21", "dia": "Dia 02", "km": "20"}, {"id": "dia-03", "data": "2026-11-22", "dia": "Dia 03", "km": "25"}, {"id": "dia-04", "data": "2026-11-23", "dia": "Dia 04", "km": "21"}, {"id": "dia-05", "data": "2026-11-24", "dia": "Dia 05", "km": "25,5"}, {"id": "dia-06", "data": "2026-11-25", "dia": "Dia 06", "km": "20"}, {"id": "dia-07", "data": "2026-11-26", "dia": "Dia 07", "km": "24"}, {"id": "dia-08", "data": "2026-11-27", "dia": "Dia 08", "km": "26"}, {"id": "dia-09", "data": "2026-11-28", "dia": "Dia 09", "km": "31"}, {"id": "dia-10", "data": "2026-11-29", "dia": "Dia 10", "km": "34"}, {"id": "dia-11", "data": "2026-11-30", "dia": "Dia 11", "km": "27"}, {"id": "dia-12", "data": "2026-12-01", "dia": "Dia 12", "km": ""}];
 
   function el(tag, cls, filhos) {
     var n = document.createElement(tag);
@@ -317,51 +321,49 @@ section[id], .dia, .bilhete { scroll-margin-top: 16px; }
   function diasAte(de, ate) {
     return Math.round((Date.parse(ate + "T12:00:00") - Date.parse(de + "T12:00:00")) / 864e5);
   }
-  function fones(lista) {
-    var ul = el("ul", "fones");
-    lista.forEach(function (f) {
-      var li = el("li", "", [link(f.href, "fone num", f.numero)]);
-      if (f.quem) li.append(" ", el("span", "fone-quem", [f.quem]));
-      ul.append(li);
-    });
-    return ul;
-  }
 
   var teste = new URLSearchParams(location.search).get("data");
   var hoje = /^\d{4}-\d{2}-\d{2}$/.test(teste || "") ? teste : iso(new Date());
-  var caixa = document.getElementById("agora");
+  var contagem = document.getElementById("contagem");
   var i = DIAS.findIndex(function (d) { return d.data === hoje; });
 
   if (hoje < DIAS[0].data) {
     var n = diasAte(hoje, DIAS[0].data);
-    var ida = DIAS[0].onibus;
-    caixa.append(
-      el("p", "rotulo", [n === 1 ? "Amanhã começa" : "Faltam " + n + " dias"]),
-      el("p", "agora-titulo", [DIAS[0].quando + ": " + DIAS[0].trecho])
-    );
-    if (ida) {
-      caixa.append(el("p", "agora-linha", ["Ônibus de " + ida.origem.split(",")[0] + " às " + ida.partida + "."]),
-        link("#" + ida.id, "ir", "Ver passagem de ida"));
-    }
-    caixa.hidden = false;
+    contagem.append(n === 1 ? "começa amanhã" : "faltam " + n + " dias");
+    contagem.hidden = false;
   } else if (i >= 0) {
-    var d = DIAS[i], amanha = DIAS[i + 1];
+    var d = DIAS[i];
     document.getElementById(d.id).classList.add("hoje");
     var seg = document.querySelector('.seg[data-dia="' + d.id + '"]');
     if (seg) seg.classList.add("hoje");
-    caixa.append(el("p", "rotulo", ["Hoje · " + d.dia + " · " + d.quando]), el("p", "agora-titulo", [d.trecho]));
-    if (d.km) caixa.append(el("p", "agora-linha num", [d.km + " km hoje · depois faltam " + d.faltam + " km"]));
-    if (d.onibus) caixa.append(el("p", "agora-linha", ["Ônibus às " + d.onibus.partida + " em " + d.onibus.origem.split(",")[0] + "."]));
-    if (d.pouso) {
-      caixa.append(el("p", "agora-linha", ["Pouso: ", el("strong", "", [d.pouso.nome])]));
-      if (d.pouso.fones.length) caixa.append(fones(d.pouso.fones));
-    }
-    if (amanha && amanha.pouso && amanha.pouso.notas.some(function (t) { return /véspera/i.test(t); })) {
-      caixa.append(el("p", "agora-lembrete", ["Ligue hoje para confirmar o pouso de amanhã: " + amanha.pouso.nome + "."]));
-    }
-    caixa.append(link("#" + (d.onibus && !d.km ? d.onibus.id : d.id), "ir", d.onibus && !d.km ? "Ver passagem" : "Ver o dia completo"));
-    caixa.hidden = false;
+    contagem.append(link("#" + d.id, "", "hoje é o " + d.dia));
+    contagem.hidden = false;
   }
+
+  // Barra de km fixa: destaca a etapa que está na tela enquanto o roteiro rola.
+  var faixa = document.querySelector(".faixa");
+  var barra = document.querySelector(".faixa-barra");
+  var meio = document.getElementById("faixa-meio");
+  var padrao = meio.textContent;
+  var segs = Array.prototype.slice.call(barra.querySelectorAll(".seg"));
+  var cartoes = DIAS.map(function (d) { return document.getElementById(d.id); });
+  var depois = document.getElementById("passagens");
+  var agendado = false;
+  function marcar() {
+    agendado = false;
+    var limite = faixa.getBoundingClientRect().bottom + 24;
+    var atual = null;
+    if (depois.getBoundingClientRect().top > limite) {
+      cartoes.forEach(function (c, k) { if (c.getBoundingClientRect().top <= limite) atual = DIAS[k]; });
+    }
+    segs.forEach(function (s) { s.classList.toggle("atual", !!atual && s.dataset.dia === atual.id); });
+    barra.classList.toggle("com-atual", !!(atual && atual.km));
+    meio.textContent = atual ? atual.dia + (atual.km ? " · " + atual.km + " km" : "") : padrao;
+  }
+  window.addEventListener("scroll", function () {
+    if (!agendado) { agendado = true; requestAnimationFrame(marcar); }
+  }, { passive: true });
+  marcar();
 
   // Lista "o que levar": marcações ficam guardadas só neste aparelho.
   document.querySelectorAll("input[data-guardar]").forEach(function (cx) {

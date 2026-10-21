@@ -332,19 +332,18 @@ def html_dia(d):
     return "".join(partes)
 
 
-def html_faixa(dias, total):
+def html_faixa(dias):
     segs = "".join(
         f'<a class="seg" href="#{d["id"]}" style="flex-grow:{d["km"]}" data-dia="{d["id"]}" '
         f'aria-label="{esc(d["dia"])}: {km_txt(d["km"])} km"><span class="num">{km_txt(d["km"])}</span></a>'
         for d in dias if d["km"] > 0)
     andando = [d for d in dias if d["km"] > 0]
     return (
-        '<section class="faixa" aria-label="Quilômetros de cada etapa, em escala">'
-        f'<p class="rotulo">km por etapa · {esc(andando[0]["dia"])} a {esc(andando[-1]["dia"])}</p>'
+        '<nav class="faixa" aria-label="Etapas em escala de km; toque para ir ao dia">'
         f'<div class="faixa-barra">{segs}</div>'
         f'<div class="faixa-pontas"><span>{esc(andando[0]["origem_nome"])}</span>'
-        f'<span class="num">{km_txt(total)} km</span><span>{esc(andando[-1]["destino_nome"])}</span></div>'
-        '</section>')
+        f'<span class="faixa-meio num" id="faixa-meio">km por etapa</span><span>{esc(andando[-1]["destino_nome"])}</span></div>'
+        '</nav>')
 
 
 def html_passagem(p, qr):
@@ -430,18 +429,8 @@ def html_info(itens, observacao):
 
 
 def dados_js(dias):
-    saida = []
-    for d in dias:
-        p = d["pouso"]
-        saida.append({
-            "id": d["id"], "data": d["data"].isoformat(), "dia": d["dia"], "quando": quando(d["data"]),
-            "trecho": (f"Chegada a {d['destino_nome']}" if d["origem_nome"] in ("", "—")
-                       else f"{d['origem_nome']} → {d['destino_nome']}"),
-            "km": km_txt(d["km"]) if d["km"] else "", "faltam": km_txt(d["faltam"]),
-            "pouso": {"nome": p["nome"], "fones": p["fones"], "notas": p["notas"]} if p else None,
-            "onibus": ({"id": d["onibus"]["id"], "titulo": d["onibus"]["titulo"], "partida": d["onibus"]["partida"],
-                        "origem": d["onibus"]["origem"]} if d["onibus"] else None),
-        })
+    saida = [{"id": d["id"], "data": d["data"].isoformat(), "dia": d["dia"],
+              "km": km_txt(d["km"]) if d["km"] else ""} for d in dias]
     return json.dumps(saida, ensure_ascii=False).replace("</", "<\\/")
 
 
@@ -467,7 +456,7 @@ def main():
         "{{TOTAL_KM}}": km_txt(total),
         "{{ETAPAS}}": str(len(andando)),
         "{{NOITES}}": str(noites),
-        "{{FAIXA}}": html_faixa(dias, total),
+        "{{FAIXA}}": html_faixa(dias),
         "{{DIAS}}": "".join(html_dia(d) for d in dias),
         "{{PASSAGENS}}": "".join(html_passagem(p, qrs[p["id"]]) for p in PASSAGENS),
         "{{TELAS_QR}}": "".join(html_tela_qr(p, qrs[p["id"]]) for p in PASSAGENS),
